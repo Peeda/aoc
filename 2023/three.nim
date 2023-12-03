@@ -17,27 +17,35 @@ input.close()
 for i,line in schema.pairs:
     for k,ch in line.pairs:
         if (not (is_num(ch))) and (ch != '.'):
-            for offset in [(-1,-1),(-1,1),(1,-1),(1,1),(1,0),(0,1),(-1,0),(0,-1)]:
+            positions.clear()
+            for offset in [(-1,-1),(-1,0),(-1,1),(1,-1),(1,0),(1,1),(0,1),(0,-1)]:
                 let new_y = i + offset[0]
                 let new_x = k + offset[1]
                 if new_x >= 0 and new_x < line.len and new_y >= 0 and new_y < schema.len:
-                    positions.incl((new_y,new_x))
-
-for i,line in schema.pairs:
-    var k = 0;
-    var start,finish = 0
-    while k < line.len:
-        if is_num(line[k]):
-            start = k
-            k += 1
-            while k < line.len and is_num(line[k]):
-                k+=1
-            finish = k-1
-            for p in countup(start,finish):
-                if positions.contains((i,p)):
-                    ans += parseInt(line[start..finish])
-                    break
-        else:
-            k+=1
-
+                    var valid = not (positions.contains((new_y,new_x-1)) or positions.contains((new_y,new_x+1)))
+                    # to put top right or bottom right one given that tl/bl is on, the middle has to be off
+                    var extra = false
+                    if (offset[1] == 1) and (offset[0] == 1 or offset[0] == -1):
+                        extra = not is_num(schema[new_y][new_x-1])
+                    if positions.contains((new_y,new_x-2)):
+                        valid = valid and extra
+                    if is_num(schema[new_y][new_x]) and valid:
+                        positions.incl((new_y,new_x))
+            if positions.len == 2:
+                var temp = 0
+                for pos in positions:
+                    let y = pos[0]
+                    var l,r = pos[1]
+                    while l >= 0 and is_num(schema[y][l]):
+                        l-=1
+                    l += 1
+                    while r < schema[y].len and is_num(schema[y][r]):
+                        r+=1
+                    r-=1
+                    let val = parseInt(schema[y][l..r])
+                    if temp == 0:
+                        temp = val
+                    else:
+                        ans += val * temp
+                echo i, " ", k, " ", schema[i][k], " ", temp
 echo ans
