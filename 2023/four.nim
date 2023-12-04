@@ -4,6 +4,7 @@ import std/math
 var curr_line = ""
 var ans = 0
 let input = open("input.txt")
+var scores = newSeq[int](0)
 
 while readLine(input, curr_line):
     var first: set[int16]
@@ -17,9 +18,18 @@ while readLine(input, curr_line):
                 first.incl(val)
             else:
                 second.incl(val)
-    let points = card(first*second)
-    if points != 0:
-        ans += int16(pow(float32(2),float32(points-1)))
+    let matches = card(first*second)
+    scores.add(matches)
 
+var counts = newSeq[int](scores.len)
+for i in 0..counts.len-1:
+    counts[i] = 1
+
+for i in 0..scores.len-1:
+    for k in i+1..i+scores[i]:
+        counts[k] += counts[i]
+
+for i in 0..counts.len-1:
+    ans += counts[i]
 
 echo ans
