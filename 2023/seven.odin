@@ -17,6 +17,24 @@ strength :: proc(hand:[5]u8) -> u8 {
     }
     freqs: [dynamic]u8
     for val in hand {
+        if val == 0 {
+            max_val:u8 = 0
+            val_cnt:u8 = 0
+            for other_val in hand {
+                if other_val != 0 {
+                    if cnt[other_val] > val_cnt {
+                        max_val = other_val
+                        val_cnt = cnt[other_val]
+                    }
+                }
+            }
+            append(&freqs,val_cnt+cnt[val])
+            cnt[max_val] = 0
+            cnt[val] = 0
+            break
+        }
+    }
+    for val in hand {
         if cnt[val] > 0 {
             append(&freqs,cnt[val])
             cnt[val] = 0
@@ -41,6 +59,7 @@ strength :: proc(hand:[5]u8) -> u8 {
             return 5
         }
     case 1:
+        assert(freqs[0] == 5)
         return 7
     }
     assert(false)
@@ -83,7 +102,7 @@ main :: proc() {
             case 'T':
                 cards[index] = 10
             case 'J':
-                cards[index] = 11
+                cards[index] = 0
             case 'Q':
                 cards[index] = 12
             case 'K':
