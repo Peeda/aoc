@@ -3,6 +3,7 @@ package aoc
 import "core:fmt"
 import "core:strings"
 import "core:strconv"
+import "core:slice"
 
 main :: proc() {
     histories: [dynamic][dynamic]int
@@ -23,6 +24,7 @@ main :: proc() {
     }
     ans := 0
     for history in histories {
+        slice.reverse(history[:])
         curr_ans := history[len(history)-1]
         curr: [dynamic]int
         for h in history {
